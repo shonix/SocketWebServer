@@ -1,5 +1,4 @@
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -48,6 +47,7 @@ public class Webserver {
 		String[] requestParam = request.split(" ");
 		if(!requestParam[0].equals("GET")){
 			userSocket.close();
+			return;
 		}
 		if(requestParam[1].equals("/")){
 			requestParam[1] = "/index.html";
@@ -57,8 +57,8 @@ public class Webserver {
 				
 		//opretter ny fil, med path der blev modtaget fra client
 		File file = new File(path);
-		//Finder fil extension ud fra filens path, til brug ved HEADER
-	    
+		Path filePath = FileSystems.getDefault().getPath(path);
+
 		OutputStream userOutput = userSocket.getOutputStream();
 		if(!file.exists()){
 			msg = "HTTP/1.1 404 FileNotFound";
@@ -67,11 +67,11 @@ public class Webserver {
 			userSocket.close();
 			return;
 		}
-		Path path2 = FileSystems.getDefault().getPath(path);
+		
 		StringBuilder header = new StringBuilder();
 		addHeader(header, "HTTP/1.1 200 OK");
 		addHeader(header, "Connection close");
-		addHeader(header, "Content-Type: " + Files.probeContentType(path2));
+		addHeader(header, "Content-Type: " + Files.probeContentType(filePath));
 		addHeader(header, "File size: " +file.length());
 		addHeader(header,"");
 		String strHead = header.toString();
@@ -93,6 +93,8 @@ public class Webserver {
 		//lukker socket
 		userSocket.close();
 	}
+	
+	
 	
 	//Bruges til at bygge Header op for return
 	public void addHeader(StringBuilder header, String append){
