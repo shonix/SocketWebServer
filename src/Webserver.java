@@ -43,7 +43,8 @@ public class Webserver {
 	@SuppressWarnings("deprecation")
 	public void processGET(Socket userSocket) throws IOException{
 		int transferedBytes = 0;
-		byte[] byteBuf = new byte[1024]; //sætter filen i kø, for ikke at skulle sende hele fil på samme tid, sender den lidt ad gangen.. therefore buffer....
+		byte[] byteBuf = new byte[1024]; 
+		//sætter filen i kø, for ikke at skulle sende hele fil på samme tid, sender den lidt ad gangen.. therefore buffer....
 		//Læser client input, altså input fra userSocket (det man skriver i adresse bar)
 		BufferedReader inFromClient = new BufferedReader(new InputStreamReader(userSocket.getInputStream()));
 		OutputStream userOutput = userSocket.getOutputStream();
@@ -68,13 +69,9 @@ public class Webserver {
 				
 		//opretter ny fil, med path der blev modtaget fra client
 		File file = new File(path);
-<<<<<<< HEAD
 		Path filePath = FileSystems.getDefault().getPath(path);
 
-		OutputStream userOutput = userSocket.getOutputStream();
-=======
-		
->>>>>>> 462599d8086a911806f74f1997c6a3d292e1d0c5
+
 		if(!file.exists()){
 			/* msg = "HTTP/1.1 404 FileNotFound";
 			 * msgHandle = msg.getBytes();
@@ -84,7 +81,6 @@ public class Webserver {
 			path = "C:\\Users\\peter_000\\Pictures\\Hjemmeside\\404.html";
 			file = new File(path);
 			//Finder fil extension ud fra filens path, til brug ved HEADER
-			Path filePath = FileSystems.getDefault().getPath(path);
 			StringBuilder header = new StringBuilder();
 			addHeader(header, "HTTP/1.1 404 Not Found");
 			addHeader(header, "Connection close");
@@ -92,20 +88,20 @@ public class Webserver {
 			addHeader(header,"");
 			String strHead = header.toString();
 			
-			while(transferedBytes < strHead.length()){ //Så længe al data fra strHead ikke er transfered, skal loop køre
-				strHead.getBytes(transferedBytes, Math.min(byteBuf.length,strHead.length()-transferedBytes), byteBuf, 0); //Starter på transfered bytes pointer (0 til start da intet flyttet) flytter 1024 bytes ad gangen, flytter til byte buffer, fra index 0.
-				userOutput.write(byteBuf,0,Math.min(strHead.length()-transferedBytes,byteBuf.length)); 	//vælger data der skal skrives til client socket. Skriver al data
+			//Så længe al data fra strHead ikke er transfered, skal loop køre
+			while(transferedBytes < strHead.length()){ 
+				//Starter på transfered bytes pointer (0 til start da intet flyttet) flytter 1024 bytes ad gangen, flytter til byte buffer, fra index 0.
+				strHead.getBytes(transferedBytes, Math.min(byteBuf.length,strHead.length()-transferedBytes), byteBuf, 0); 
+				//vælger data der skal skrives til client socket. Skriver al data
+				userOutput.write(byteBuf,0,Math.min(strHead.length()-transferedBytes,byteBuf.length)); 	
 				transferedBytes+=byteBuf.length;
 		}
-<<<<<<< HEAD
-		
-=======
 		}
-		
+
 		else if(file.exists()){
 		//Finder fil extension ud fra filens path, til brug ved HEADER
 		Path path2 = FileSystems.getDefault().getPath(path);
->>>>>>> 462599d8086a911806f74f1997c6a3d292e1d0c5
+
 		StringBuilder header = new StringBuilder();
 		addHeader(header, "HTTP/1.1 200 OK");
 		addHeader(header, "Connection close");
@@ -114,12 +110,15 @@ public class Webserver {
 		addHeader(header,"");
 		String strHead = header.toString();
 		
-		while(transferedBytes < strHead.length()){ //Så længe al data fra strHead ikke er transfered, skal loop køre
-			strHead.getBytes(transferedBytes, Math.min(byteBuf.length,strHead.length()-transferedBytes), byteBuf, 0); //Starter på transfered bytes pointer (0 til start da intet flyttet) flytter 1024 bytes ad gangen, flytter til byte buffer, fra index 0.
-			userOutput.write(byteBuf,0,Math.min(strHead.length()-transferedBytes,byteBuf.length)); 	//vælger data der skal skrives til client socket. Skriver al data
-			transferedBytes+=byteBuf.length;														//ud fra index 0 til, hvad enten der er mindst ad bytebufferen, eller Headeres resterende størrelse
+		//Så længe al data fra strHead ikke er transfered, skal loop køre
+		while(transferedBytes < strHead.length()){ 
+			//Starter på transfered bytes pointer (0 til start da intet flyttet) flytter 1024 bytes ad gangen, flytter til byte buffer, fra index 0.
+			strHead.getBytes(transferedBytes, Math.min(byteBuf.length,strHead.length()-transferedBytes), byteBuf, 0); 
+			//vælger data der skal skrives til client socket. Skriver al data
+			//ud fra index 0 til, hvad enten der er mindst ad bytebufferen, eller Headeres resterende størrelse
+			userOutput.write(byteBuf,0,Math.min(strHead.length()-transferedBytes,byteBuf.length)); 	
+			transferedBytes+=byteBuf.length;														
 		}
-		
 		}
 		
 		InputStream outToClient = new FileInputStream(file); //Åbner filen, så den er klar til at blive læst/omdannet til bytes.
