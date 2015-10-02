@@ -15,24 +15,30 @@ import java.nio.file.Path;
 public class Webserver {
 	//Fields
 
-	public Webserver()throws Exception{
-		//initialisere socket listener, og socket for users
-		ServerSocket socketListener;
-		Socket userSocket = null;
-		boolean running = true;
+	public void startServer()throws Exception{
 		
-		//Sætter listenerern til at lytte på port 5555
-		socketListener = new ServerSocket(5557);
-		
-		while (running){
-			//opretter user socket, ud fra accepteret socket listener
-			//kalder processGET med userSocket
-			userSocket = socketListener.accept();
-			if(userSocket != null){
-				processGET(userSocket);
+		Runnable serverTask = new Runnable(){
+			public void run(){
+			try{
+			//Sætter listenerern til at lytte på port 5555
+			ServerSocket socketListener = new ServerSocket(5558);
+			
+			while (true){
+				//opretter user socket, ud fra accepteret socket listener
+				//kalder processGET med userSocket
+				Socket userSocket = socketListener.accept();
+				if(userSocket != null){
+					processGET(userSocket);
+				}
 			}
-		}
-		socketListener.close();
+	            } catch (IOException e) {
+	                System.err.println("Unable to process client request");
+	                e.printStackTrace();
+	            }
+			}
+		};
+		Thread serverThread = new Thread(serverTask);
+		serverThread.start();
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -44,7 +50,7 @@ public class Webserver {
 		OutputStream userOutput = userSocket.getOutputStream();
 		String request = inFromClient.readLine();
 		System.out.println("Fra socket: " + request);
-		if(request.length() == 0){
+		if(request.length() < 1 ){
 			return;
 		}
 		//opretter et string array hvori fil navn placeres, og sendes ind i en string (path)
@@ -103,6 +109,7 @@ public class Webserver {
 			userOutput.write(byteBuf,0,Math.min(strHead.length()-transferedBytes,byteBuf.length)); 	//vælger data der skal skrives til client socket. Skriver al data
 			transferedBytes+=byteBuf.length;														//ud fra index 0 til, hvad enten der er mindst ad bytebufferen, eller Headeres resterende størrelse
 		}
+		
 		}
 		
 		InputStream outToClient = new FileInputStream(file); //Åbner filen, så den er klar til at blive læst/omdannet til bytes.
