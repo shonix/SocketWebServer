@@ -1,10 +1,7 @@
 
 public class Main {
-	public static void main(String[]args){
-		try {
-			new Webserver();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public static void main(String[]args)throws Exception{
+			new Webserver().startServer();
+
 	}
 }
