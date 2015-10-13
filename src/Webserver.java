@@ -11,33 +11,17 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class Webserver {
+public class Webserver extends Thread {
 	//Fields
-
-	public void startServer()throws Exception{
+	Socket userSocket;
+	public Webserver(Socket userSocket){
+		this.userSocket = userSocket;
 		
-		Runnable serverTask = new Runnable(){
-			public void run(){
-			try{
-			//Sætter listenerern til at lytte på port 5555
-			ServerSocket socketListener = new ServerSocket(5558);
-			
-			while (true){
-				//opretter user socket, ud fra accepteret socket listener
-				//kalder processGET med userSocket
-				Socket userSocket = socketListener.accept();
-				if(userSocket != null){
-					processGET(userSocket);
-				}
-			}
-	            } catch (IOException e) {
-	                System.err.println("Unable to process client request");
-	                e.printStackTrace();
-	            }
-			}
-		};
-		Thread serverThread = new Thread(serverTask);
-		serverThread.start();
+	}
+	public void run(){
+		try {
+			processGET(userSocket);
+		} catch (IOException e) {e.printStackTrace();}
 	}
 	
 	@SuppressWarnings("deprecation")
